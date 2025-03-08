@@ -80,34 +80,38 @@ function App() {
         same properties.
       </p>
 
-      {parsing ? (
-        <p>Parsing...</p>
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <h2>File</h2>
-          <input type="file" onChange={handleChangeFile} />
+      <form onSubmit={handleSubmit}>
+        <h2>File</h2>
+        <input type="file" onChange={handleChangeFile} disabled={parsing} />
 
-          <h2>Removables</h2>
-          {removables.map((value, index) => (
-            <fieldset key={index} role="group">
-              <input value={value} onChange={handleChange(index)} />
-              <button type="button" onClick={handleRemove(index)}>
-                -
-              </button>
-            </fieldset>
-          ))}
-          <button type="button" onClick={handleAdd}>
-            +
-          </button>
-
-          <fieldset role="group">
-            <button>Let's Go</button>
-            <button className="secondary" type="button" onClick={handleShare}>
-              Share
+        <h2>Removables</h2>
+        {removables.map((value, index) => (
+          <fieldset key={index} role="group">
+            <input
+              value={value}
+              onChange={handleChange(index)}
+              disabled={parsing}
+            />
+            <button
+              type="button"
+              onClick={handleRemove(index)}
+              disabled={parsing}
+            >
+              -
             </button>
           </fieldset>
-        </form>
-      )}
+        ))}
+        <button type="button" onClick={handleAdd} disabled={parsing}>
+          +
+        </button>
+
+        <fieldset role="group">
+          <button disabled={parsing}>Let's Go</button>
+          <button className="secondary" type="button" onClick={handleShare}>
+            Share
+          </button>
+        </fieldset>
+      </form>
     </Page>
   );
 }
