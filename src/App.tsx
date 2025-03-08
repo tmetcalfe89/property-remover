@@ -89,7 +89,7 @@ function App() {
   }, [link]);
 
   return (
-    <Page name="Property Remover">
+    <Page name="Tim's Property Remover">
       <h3>How to use</h3>
       <p>
         Upload a ZIP with your JSONs. Add a list of properties to remove from
