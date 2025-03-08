@@ -14,10 +14,16 @@ export default async function parseZip(file: File, removables: string[]) {
         }
         const json = JSON.parse(await zipEntry.async("text"));
         removables.forEach((keychainString) => {
-          let pointer = json;
-          const keychain = keychainString.split(".");
-          keychain.slice(0, -1).forEach((k) => (pointer = pointer[k]));
-          delete pointer[keychain.slice(-1)[0]];
+          try {
+            let pointer = json;
+            const keychain = keychainString.split(".");
+            keychain.slice(0, -1).forEach((k) => (pointer = pointer[k]));
+            delete pointer[keychain.slice(-1)[0]];
+          } catch {
+            console.error(
+              `Could not remove field ${keychainString} from file ${relativePath} as it was not present.`
+            );
+          }
         });
         outputZip.file(relativePath, JSON.stringify(json));
       })()
