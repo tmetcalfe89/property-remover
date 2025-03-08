@@ -1,11 +1,20 @@
-import { ChangeEvent, FormEvent, useCallback, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useMemo, useState } from "react";
 import Page from "./components/page/Page";
 import parseZip from "./util/parseZip";
+import loadRemovables from "./util/loadRemovables";
 
 function App() {
   const [file, setFile] = useState<File>();
-  const [removables, setRemovables] = useState<string[]>([""]);
+  const [removables, setRemovables] = useState<string[]>(
+    loadRemovables() || [""]
+  );
   const [parsing, setParsing] = useState<boolean>(false);
+  const [showShare, setShowShare] = useState<boolean>(false);
+  const [copied, setCopied] = useState<boolean>(false);
+
+  const link = useMemo(() => {
+    return `${window.location.origin}/?removables=${removables.join(",")}`;
+  }, [removables]);
 
   const handleChange = useCallback((index: number) => {
     return (e: ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +74,19 @@ function App() {
     }
   }, []);
 
-  const handleShare = useCallback(() => {}, []);
+  const handleShowShare = useCallback(() => {
+    setShowShare(true);
+  }, []);
+
+  const handleHideShare = useCallback(() => {
+    setShowShare(false);
+  }, []);
+
+  const handleCopyLink = useCallback(() => {
+    navigator.clipboard.writeText(link);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
+  }, [link]);
 
   return (
     <Page name="Property Remover">
@@ -107,11 +128,28 @@ function App() {
 
         <fieldset role="group">
           <button disabled={parsing}>Let's Go</button>
-          <button className="secondary" type="button" onClick={handleShare}>
+          <button className="secondary" type="button" onClick={handleShowShare}>
             Share
           </button>
         </fieldset>
       </form>
+
+      <dialog open={showShare} onClick={handleHideShare}>
+        <article onClick={(e) => e.stopPropagation()}>
+          <header>
+            <button
+              aria-label="Close"
+              rel="prev"
+              onClick={handleHideShare}
+            ></button>
+            <p>
+              <strong>🔗 Here's your link!</strong>
+            </p>
+          </header>
+          <input readOnly value={link} onClick={handleCopyLink} />
+          <p style={{ visibility: !copied ? "hidden" : undefined }}>Copied!</p>
+        </article>
+      </dialog>
     </Page>
   );
 }
